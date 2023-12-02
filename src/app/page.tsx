@@ -1,11 +1,40 @@
 'use client'
 import { useState } from "react";
 
+const content = [
+  {
+    "front": "Front of card 1",
+    "back": "Back of card 1"
+  },
+  {
+    "front": "Front of card 2",
+    "back": "Back of card 2"
+  },
+  {
+    "front": "Front of card 3",
+    "back": "Back of card 3"
+  },
+  {
+    "front": "Front of card 4",
+    "back": "Back of card 4"
+  },
+  {
+    "front": "Front of card 5",
+    "back": "Back of card 5"
+  }
+];
+
 function FlipCard() {
   const [isFlipped, setIsFlipped] = useState(false);
+  const [currentCard, setCurrentCard] = useState(0);
 
   const handleClick = () => {
-    setIsFlipped(!isFlipped)
+    setIsFlipped(!isFlipped);
+  }
+
+  const handleNextCard = () => {
+    setCurrentCard((currentCard + 1) % content.length);
+    setIsFlipped(false);
   }
 
   return (
@@ -29,7 +58,7 @@ function FlipCard() {
               backfaceVisibility: "hidden"
             }}
           >
-            Front
+            {content[currentCard].front} 
           </div>
           <div 
             className="absolute w-full h-full rounded-lg grid place-content-center"
@@ -37,8 +66,9 @@ function FlipCard() {
               transform: "rotateY(180deg)",
               backfaceVisibility: "hidden"
             }}
+            onClick={handleNextCard}
           >
-            Back
+            {content[currentCard].back}
           </div>
         </div>
       </div>
