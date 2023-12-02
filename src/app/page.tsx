@@ -1,28 +1,28 @@
-"use client";
-import { useState } from "react"
-import { CardContent } from "../components/card"
-import Button from "../components/button"
+'use client'
+import { useState } from 'react'
+import { CardContent } from '../components/card'
+import Button from '../components/button'
 
 const content = [
   {
-    front: "Front of card 1",
-    back: "Back of card 1",
+    front: 'Front of card 1',
+    back: 'Back of card 1',
   },
   {
-    front: "Front of card 2",
-    back: "Back of card 2",
+    front: 'Front of card 2',
+    back: 'Back of card 2',
   },
   {
-    front: "Front of card 3",
-    back: "Back of card 3",
+    front: 'Front of card 3',
+    back: 'Back of card 3',
   },
   {
-    front: "Front of card 4",
-    back: "Back of card 4",
+    front: 'Front of card 4',
+    back: 'Back of card 4',
   },
   {
-    front: "Front of card 5",
-    back: "Back of card 5",
+    front: 'Front of card 5',
+    back: 'Back of card 5',
   },
 ]
 
@@ -49,20 +49,20 @@ function FlipCard() {
           className="w-72 h-72 rounded-lg cursor-pointer grid place-content-center relative bg-slate-50"
           onClick={handleCardFlip}
           style={{
-            transformStyle: "preserve-3d",
-            transition: "transform 0.6s",
-            transform: isFlipped ? "rotateY(180deg)" : "rotateY(0deg)",
+            transformStyle: 'preserve-3d',
+            transition: 'transform 0.6s',
+            transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
           }}
         >
           <CardContent
             content={content[currentCard].front}
-            style={{ backfaceVisibility: "hidden" }}
+            style={{ backfaceVisibility: 'hidden' }}
           />
           <CardContent
             content={content[currentCard].back}
             style={{
-              transform: "rotateY(180deg)",
-              backfaceVisibility: "hidden",
+              transform: 'rotateY(180deg)',
+              backfaceVisibility: 'hidden',
             }}
             onClick={handleNextCard}
           />

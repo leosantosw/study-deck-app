@@ -1,5 +1,5 @@
 interface CardContentProps {
-  content: string;
+  content: string
   style: React.CSSProperties
   onClick?: () => void
 }
