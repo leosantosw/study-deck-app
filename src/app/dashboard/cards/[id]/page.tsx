@@ -1,6 +1,6 @@
 import { db } from '@/src/db'
 import { eq } from 'drizzle-orm'
-import { cardsSchema } from '@/src/db/schema'
+import { cardsSchema, decksSchema } from '@/src/db/schema'
 import { Header } from './header'
 import CardComponent from './card-component'
 import { Button } from '../../../../components/button'
@@ -17,9 +17,15 @@ export default async function Cards({ params: { id } }: CardParams) {
     .from(cardsSchema)
     .where(eq(cardsSchema.deck_id, id))
 
+  const [{ title }] = await db
+    .select({ title: decksSchema.name })
+    .from(decksSchema)
+    .where(eq(decksSchema.id, id))
+    .limit(1)
+
   return (
     <div className="h-screen bg-blue-900 font-primary">
-      <Header totalCards={cards.length} />
+      <Header totalCards={cards.length} title={title} />
 
       <div className="flex flex-col items-center justify-center">
         <CardComponent cards={cards} />

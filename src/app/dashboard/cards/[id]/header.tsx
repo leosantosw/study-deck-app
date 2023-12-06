@@ -2,13 +2,15 @@
 
 import Link from 'next/link'
 import { ArrowLeft } from '@phosphor-icons/react'
+import { useCard } from '@/src/contexts/card-context'
 
 interface HeaderProps {
   totalCards: number
+  title: string
 }
 
-export function Header({ totalCards }: HeaderProps) {
-  const currentCard = 1
+export function Header({ totalCards, title }: HeaderProps) {
+  const { currentCard } = useCard()
   return (
     <header>
       <Link href="/dashboard/">
@@ -17,7 +19,7 @@ export function Header({ totalCards }: HeaderProps) {
         </div>
       </Link>
       <div className="flex flex-col items-center justify-center h-40 md:h-36">
-        <h1 className="text-blue-100 text-2xl">Inglês Iniciante</h1>
+        <h1 className="text-blue-100 text-2xl">{title}</h1>
         <div className="flex items-center mt-4">
           <div className="w-72 md:w-88 h-3 bg-blue-600 rounded-full">
             <div
