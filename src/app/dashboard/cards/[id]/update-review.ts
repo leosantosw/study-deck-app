@@ -25,7 +25,7 @@ export async function handleUpdateReview({
       ease,
       interval,
       next_review_date,
-      review_date: new Date().toDateString(),
+      review_date: new Date(),
     })
     .where(eq(reviewsSchema.id, id))
 }

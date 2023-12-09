@@ -36,6 +36,6 @@ export const reviewsSchema = pgTable('reviews', {
     .references(() => cardsSchema.id),
   ease: real('ease').notNull(),
   interval: real('interval').notNull(),
-  review_date: date('review_date').notNull(),
-  next_review_date: date('next_review_date').notNull(),
+  review_date: date('review_date', { mode: 'date' }),
+  next_review_date: date('next_review_date', { mode: 'date' }),
 })

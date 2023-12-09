@@ -19,8 +19,8 @@ interface IReview {
   card_id: string
   ease: number
   interval: number
-  review_date: string
-  next_review_date: string
+  review_date: Date | null
+  next_review_date: Date | null
 }
 
 interface CardComponentProps {
