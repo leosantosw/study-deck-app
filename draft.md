@@ -22,17 +22,17 @@ CREATE TABLE cards (
   FOREIGN KEY (deck_id) REFERENCES decks(id)
 )
 
-CREATE TABLE ReviewRecords (
-    review_id INT PRIMARY KEY,
-    user_id INT,
-    card_id INT,
+CREATE TABLE reviews (
+    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    user_id UUID,
+    card_id UUID,
     review_date TIMESTAMP NOT NULL,
     next_review_date TIMESTAMP NOT NULL,
+    interval INT NOT NULL,
     ease FLOAT NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES Users(user_id),
-    FOREIGN KEY (card_id) REFERENCES Cards(card_id),
-    -- Outros campos
-);
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (card_id) REFERENCES cards(id)
+)
 
 SELECT
     Cards.card_id,
@@ -46,3 +46,4 @@ JOIN
 WHERE
     Reviews.next_review_date <= NOW()
     AND Reviews.user_id = [ID_DO_USUARIO];
+

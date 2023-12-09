@@ -13,7 +13,7 @@ export const BoxItem = ({ title, description, label, href }: BoxItemProps) => {
       href={href}
       className="relative bg-gray-50 rounded-xl shadow-gray p-5"
     >
-      <h3 className="font-second text-base font-bold text-gray-900 mb-1">
+      <h3 className="font-primary text-base font-bold text-gray-900 mb-1">
         {title}
       </h3>
       <p className="font-primary text-gray-500 text-sm">{description}</p>

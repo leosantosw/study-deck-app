@@ -8,7 +8,7 @@ export default async function Dashboad() {
   return (
     <div>
       <header className="relative flex justify-between bg-blue-900 items-center py-4 px-8 md:px-16">
-        <h1 className="text-blue-100 font-bold text-xl font-second">
+        <h1 className="text-blue-100 font-bold text-xl font-primary">
           Study deck
         </h1>
         <img
@@ -20,7 +20,7 @@ export default async function Dashboad() {
       </header>
 
       <main className="p-5 md:px-16">
-        <h2 className="text-base font-bold text-gray-800 pb-3 font-second">
+        <h2 className="text-base font-bold text-gray-800 pb-3 font-primary">
           Listas
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

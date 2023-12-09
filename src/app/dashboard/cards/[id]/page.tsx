@@ -1,9 +1,8 @@
 import { db } from '@/src/db'
 import { eq } from 'drizzle-orm'
-import { cardsSchema, decksSchema } from '@/src/db/schema'
 import { Header } from './header'
-import CardComponent from './card-component'
-import { Button } from '../../../../components/button'
+import { CardComponent } from './card-component'
+import { cardsSchema, decksSchema, reviewsSchema } from '@/src/db/schema'
 
 interface CardParams {
   params: {
@@ -12,10 +11,11 @@ interface CardParams {
 }
 
 export default async function Cards({ params: { id } }: CardParams) {
-  const cards = await db
+  const cardsAndReview = await db
     .select()
     .from(cardsSchema)
     .where(eq(cardsSchema.deck_id, id))
+    .innerJoin(reviewsSchema, eq(reviewsSchema.card_id, cardsSchema.id))
 
   const [{ title }] = await db
     .select({ title: decksSchema.name })
@@ -25,15 +25,9 @@ export default async function Cards({ params: { id } }: CardParams) {
 
   return (
     <div className="h-screen bg-blue-900 font-primary">
-      <Header totalCards={cards.length} title={title} />
-
+      <Header totalCards={cardsAndReview.length} title={title} />
       <div className="flex flex-col items-center justify-center">
-        <CardComponent cards={cards} />
-        <div className="p-2">
-          <Button color="red" text="Again" />
-          <Button color="blue" text="Good" />
-          <Button color="green" text="Easy" />
-        </div>
+        <CardComponent flashcards={cardsAndReview} />
       </div>
     </div>
   )

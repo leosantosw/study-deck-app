@@ -70,8 +70,7 @@ const config: Config = {
         '100': '25rem',
       },
       fontFamily: {
-        primary: ['Comfortaa'],
-        second: ['Roboto'],
+        primary: ['Plus Jakarta Sans'],
       },
     },
   },
