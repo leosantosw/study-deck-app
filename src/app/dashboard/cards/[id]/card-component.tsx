@@ -33,8 +33,13 @@ interface CardComponentProps {
 type ReviewMethod = 'hard' | 'good' | 'easy'
 
 export function CardComponent({ flashcards }: CardComponentProps) {
-  const { currentCard, isFlipped, handleSetNextCard, handleToggleIsFlipped } =
-    useCard()
+  const {
+    isFlipped,
+    isFinishedDeck,
+    currentCard,
+    handleSetNextCard,
+    handleToggleIsFlipped,
+  } = useCard()
 
   const handleNextCard = () => {
     handleSetNextCard(flashcards.length)
@@ -42,7 +47,6 @@ export function CardComponent({ flashcards }: CardComponentProps) {
 
   function handlePressDifficult(reviewMethod: ReviewMethod) {
     const { id, ease, interval } = flashcards[currentCard]?.reviews
-    console.log(ease, interval)
 
     const sm2 = new SM2Algorithm({ ease, interval })
     sm2[reviewMethod]()
@@ -50,9 +54,18 @@ export function CardComponent({ flashcards }: CardComponentProps) {
       id: id,
       ease: sm2.getEaseFactor(),
       interval: sm2.getInterval(),
-      next_review_date: sm2.nextReviewDate?.toDateString() || '',
+      next_review_date: sm2.nextReviewDate,
     })
     handleNextCard()
+  }
+
+  if (isFinishedDeck) {
+    return (
+      <div className="flex flex-col items-center mt-4">
+        <h1 className="text-blue-100 text-2xl">Parabéns!</h1>
+        <p className="text-blue-100 text-xl">Você terminou o deck!</p>
+      </div>
+    )
   }
 
   return (

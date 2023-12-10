@@ -7,6 +7,7 @@ interface CardContextType {
   handleSetNextCard: (totalCards: number) => void
   isFlipped?: boolean
   handleToggleIsFlipped?: () => void
+  isFinishedDeck: boolean
 }
 
 const CardContext = createContext({} as CardContextType)
@@ -14,9 +15,11 @@ const CardContext = createContext({} as CardContextType)
 export default function CardProvider({ children }: { children: ReactNode }) {
   const [currentCard, setCurrentCard] = useState(0)
   const [isFlipped, setIsFlipped] = useState(false)
+  const [isFinishedDeck, setIsFinishedDeck] = useState(false)
 
   function handleSetNextCard(totalCards: number) {
     setCurrentCard((currentCard + 1) % totalCards)
+    setIsFinishedDeck(currentCard + 1 === totalCards)
   }
 
   function handleToggleIsFlipped() {
@@ -30,6 +33,7 @@ export default function CardProvider({ children }: { children: ReactNode }) {
         handleSetNextCard,
         isFlipped,
         handleToggleIsFlipped,
+        isFinishedDeck,
       }}
     >
       {children}

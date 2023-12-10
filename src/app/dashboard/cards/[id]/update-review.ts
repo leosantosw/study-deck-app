@@ -1,14 +1,14 @@
 'use server'
 
 import { db } from '@/src/db'
-import { reviewsSchema } from '@/src/db/schema'
 import { eq } from 'drizzle-orm'
+import { reviewsSchema } from '@/src/db/schema'
 
 interface IUpdateReview {
   id: string
   interval: number
   ease: number
-  next_review_date: string
+  next_review_date: Date | null
 }
 
 export async function handleUpdateReview({
@@ -17,8 +17,6 @@ export async function handleUpdateReview({
   ease,
   next_review_date,
 }: IUpdateReview) {
-  console.log('handleUpdateReview', id, interval, ease, next_review_date)
-
   await db
     .update(reviewsSchema)
     .set({
