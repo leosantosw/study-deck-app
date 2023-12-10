@@ -84,7 +84,7 @@ export function CardComponent({ flashcards }: CardComponentProps) {
           style={{ backfaceVisibility: 'hidden', fontSize: '1rem' }}
         />
         <CardContent
-          content={flashcards[currentCard]?.cards.back_text}
+          content={isFlipped ? flashcards[currentCard]?.cards.back_text : ''}
           style={{
             transform: 'rotateY(180deg)',
             backfaceVisibility: 'hidden',
