@@ -2,7 +2,8 @@
 
 import { useCard } from '@/src/contexts/card-context'
 import { GoBackButton } from '@/src/components/goback-button'
-import Confetti from 'react-dom-confetti'
+import dynamic from 'next/dynamic'
+const Confetti = dynamic(() => import('react-dom-confetti'), { ssr: false })
 
 const config = {
   angle: 90,
