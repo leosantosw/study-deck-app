@@ -1,10 +1,11 @@
 'use client'
 
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { toast } from 'react-toastify'
 import { loginUser } from './login-user'
 import { useRouter } from 'next/navigation'
 import { ClipLoader } from 'react-spinners'
+import { setCookie } from 'nookies'
 
 const notifications = {
   loginSuccessful: () =>
@@ -31,17 +32,24 @@ export default function Login() {
       return
     }
 
-    const { status } = await loginUser({ username, password })
+    const { status, access_token: accessToken } = await loginUser({
+      username,
+      password,
+    })
 
     setIsLoading(false)
 
-    if (status === 401) {
-      notifications.wrongCredentials()
-      setIsLoading(false)
-    } else if (status === 201) {
-      notifications.loginSuccessful()
-      router.push('/dashboard')
+    if (!accessToken || status !== 201) {
+      return notifications.wrongCredentials()
     }
+
+    setCookie(null, 'access_token', accessToken, {
+      maxAge: 24 * 60,
+      path: '/',
+    })
+
+    notifications.loginSuccessful()
+    return router.push('/dashboard')
   }
 
   return (
