@@ -4,7 +4,7 @@ import { db } from '@/src/db'
 import { usersSchema } from '@/src/db/schema'
 import { compare } from 'bcrypt'
 import { eq } from 'drizzle-orm'
-import jwt from 'jsonwebtoken'
+import * as jose from 'jose'
 
 interface ILoginUser {
   username: string
@@ -41,13 +41,11 @@ export async function loginUser({
     return { message: 'wrong username or password', status: 401 }
   }
 
-  const accessToken = jwt.sign(
-    { user_id: user.id },
-    process.env.JWT_SECRET_KEY as string,
-    {
-      expiresIn: '1d',
-    }
-  )
+  const accessToken = await new jose.SignJWT({ userId: `your-data` })
+    .setProtectedHeader({ alg: 'HS256' })
+    .setIssuedAt()
+    .setExpirationTime('1d')
+    .sign(new TextEncoder().encode(String(process.env.JWT_SECRET_KEY)))
 
   return { message: 'User logged in', status: 201, access_token: accessToken }
 }
