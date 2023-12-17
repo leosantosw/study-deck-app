@@ -3,6 +3,7 @@ import { eq } from 'drizzle-orm'
 import { cookies } from 'next/headers'
 import { decksSchema } from '@/src/db/schema'
 import { BoxItem } from '@/src/components/box-item'
+import Link from 'next/link'
 
 export default async function Dashboad() {
   const userId = cookies().get('user_id')?.value || null
@@ -31,9 +32,11 @@ export default async function Dashboad() {
           <h2 className="mt-auto text-base align-text-bottom font-bold text-gray-800 pb-3 font-primary">
             {decks.length > 0 ? 'Listas' : 'Nenhuma lista ainda.'}
           </h2>
-          <button className="bg-blue-900 text-blue-100 font-bold py-2 px-4 rounded-md h-10 mb-6">
-            Criar lista
-          </button>
+          <Link href="/dashboard/decks">
+            <button className="bg-blue-900 text-blue-100 font-bold py-2 px-4 rounded-md h-10 mb-6">
+              Criar lista
+            </button>
+          </Link>
         </div>
 
         {decks.length === 0 ? (

@@ -27,7 +27,7 @@ export async function middleware(request: NextRequest) {
 
   request.cookies.set('user_id', String(userId))
 
-  if (DASHBOARD_PATH === currentPathname) {
+  if (currentPathname.includes(DASHBOARD_PATH)) {
     return NextResponse.next({ request })
   }
 
@@ -49,5 +49,5 @@ async function verifyToken(accessToken: string): Promise<boolean | string> {
 }
 
 export const config = {
-  matcher: ['/', '/sign-in', '/dashboard'],
+  matcher: ['/', '/sign-in', '/dashboard/:path*'],
 }
