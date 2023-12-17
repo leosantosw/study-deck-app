@@ -9,7 +9,7 @@ export const usersSchema = pgTable('users', {
 
 export const decksSchema = pgTable('decks', {
   id: text('id').primaryKey(),
-  user_id: text('id')
+  user_id: text('user_id')
     .notNull()
     .references(() => usersSchema.id),
   name: text('name').notNull(),

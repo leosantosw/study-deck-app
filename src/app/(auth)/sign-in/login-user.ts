@@ -41,7 +41,7 @@ export async function loginUser({
     return { message: 'wrong username or password', status: 401 }
   }
 
-  const accessToken = await new jose.SignJWT({ userId: `your-data` })
+  const accessToken = await new jose.SignJWT({ user_id: user.id })
     .setProtectedHeader({ alg: 'HS256' })
     .setIssuedAt()
     .setExpirationTime('1d')

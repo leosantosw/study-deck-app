@@ -1,28 +1,40 @@
+import * as jose from 'jose'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
-import * as jose from 'jose'
-import { db } from './db'
-import { usersSchema } from './db/schema'
-import { eq } from 'drizzle-orm'
 
-interface GetAccessToken {
-  name: string
-  value: string
-}
+const SIGN_IN_PATH = '/sign-in'
+const DASHBOARD_PATH = '/dashboard'
 
 interface JWTPayload {
   user_id: string
 }
 
 export async function middleware(request: NextRequest) {
-  const { value: accessToken = null } = request.cookies.get(
-    'access_token'
-  ) as GetAccessToken
+  const accessToken = request.cookies.get('access_token')?.value ?? null
+  const currentPathname = request.nextUrl.pathname
 
   if (!accessToken) {
-    return NextResponse.redirect(new URL('/', request.url))
+    return currentPathname === SIGN_IN_PATH
+      ? NextResponse.next({ request })
+      : NextResponse.redirect(new URL(SIGN_IN_PATH, request.url))
   }
 
+  const userId = await verifyToken(accessToken)
+
+  if (!userId) {
+    return NextResponse.redirect(new URL(SIGN_IN_PATH, request.url))
+  }
+
+  request.cookies.set('user_id', String(userId))
+
+  if (DASHBOARD_PATH === currentPathname) {
+    return NextResponse.next({ request })
+  }
+
+  return NextResponse.redirect(new URL(DASHBOARD_PATH, request.url))
+}
+
+async function verifyToken(accessToken: string): Promise<boolean | string> {
   try {
     const {
       payload: { user_id: userId },
@@ -30,14 +42,12 @@ export async function middleware(request: NextRequest) {
       accessToken,
       new TextEncoder().encode(String(process.env.JWT_SECRET_KEY))
     )
-    console.log('userId', userId)
-
-    return NextResponse.next()
+    return userId
   } catch (error) {
-    return NextResponse.redirect(new URL('/', request.url))
+    return false
   }
 }
 
 export const config = {
-  matcher: '/dashboard',
+  matcher: ['/', '/sign-in', '/dashboard'],
 }

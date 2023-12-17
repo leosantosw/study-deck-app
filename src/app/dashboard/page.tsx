@@ -1,9 +1,16 @@
-import { BoxItem } from '@/src/components/box-item'
 import { db } from '@/src/db'
+import { eq } from 'drizzle-orm'
+import { cookies } from 'next/headers'
 import { decksSchema } from '@/src/db/schema'
+import { BoxItem } from '@/src/components/box-item'
 
 export default async function Dashboad() {
-  const decks = await db.select().from(decksSchema)
+  const userId = cookies().get('user_id')?.value || null
+
+  const decks = await db
+    .select()
+    .from(decksSchema)
+    .where(eq(decksSchema.user_id, String(userId)))
 
   return (
     <div>
@@ -20,20 +27,36 @@ export default async function Dashboad() {
       </header>
 
       <main className="p-5 md:px-16">
-        <h2 className="text-base font-bold text-gray-800 pb-3 font-primary">
-          Listas
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {decks.map((deck) => (
-            <BoxItem
-              key={deck.id}
-              title={deck.name}
-              description={deck.description}
-              href={`dashboard/cards/${deck.id}`}
-              label={`${deck.total_cards} cards`}
-            />
-          ))}
+        <div className="flex justify-between">
+          <h2 className="mt-auto text-base align-text-bottom font-bold text-gray-800 pb-3 font-primary">
+            {decks.length > 0 ? 'Listas' : 'Nenhuma lista ainda.'}
+          </h2>
+          <button className="bg-blue-900 text-blue-100 font-bold py-2 px-4 rounded-md h-10 mb-6">
+            Criar lista
+          </button>
         </div>
+
+        {decks.length === 0 ? (
+          <div>
+            <p className="text-gray-500">
+              Crie uma lista para começar a estudar.
+            </p>
+          </div>
+        ) : (
+          <div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {decks.map((deck) => (
+                <BoxItem
+                  key={deck.id}
+                  title={deck.name}
+                  description={deck.description}
+                  href={`dashboard/cards/${deck.id}`}
+                  label={`${deck.total_cards} cards`}
+                />
+              ))}
+            </div>
+          </div>
+        )}
       </main>
     </div>
   )
