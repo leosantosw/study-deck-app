@@ -6,6 +6,7 @@ import { handleCreateDeck } from './create-deck'
 import { PlusCircle } from '@phosphor-icons/react'
 import { GoBackButton } from '@/src/components/goback-button'
 import { useRouter } from 'next/navigation'
+import { revalidatePath } from 'next/cache'
 
 const notifications = {
   fillAllFields: () =>
@@ -74,6 +75,7 @@ export default function Page() {
     }
 
     notifications.successOnCreateDeck()
+    revalidatePath('/dashboard/')
     router.push('/dashboard/')
   }
 
