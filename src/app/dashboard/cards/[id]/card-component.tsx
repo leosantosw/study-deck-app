@@ -6,14 +6,14 @@ import { CardContent } from '@/src/components/card'
 import { useCard } from '@/src/contexts/card-context'
 import { handleUpdateReview } from './update-review'
 
-interface ICard {
+export interface ICard {
   id: string
   deck_id: string
   front_text: string
   back_text: string
 }
 
-interface IReview {
+export interface IReview {
   id: string
   user_id: string
   card_id: string

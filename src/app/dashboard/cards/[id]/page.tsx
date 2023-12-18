@@ -1,6 +1,6 @@
 import { db } from '@/src/db'
 import { Header } from './header'
-import { CardComponent } from './card-component'
+import { CardComponent, ICard, IReview } from './card-component'
 import { GoBackButton } from '@/src/components/goback-button'
 import { and, eq, isNull, lte, or } from 'drizzle-orm'
 import { cardsSchema, decksSchema, reviewsSchema } from '@/src/db/schema'
@@ -12,7 +12,7 @@ interface CardParams {
 }
 
 export default async function Cards({ params: { id } }: CardParams) {
-  const cardsAndReview = await db
+  const cardsAndReview = (await db
     .select()
     .from(cardsSchema)
     .innerJoin(reviewsSchema, eq(reviewsSchema.card_id, cardsSchema.id))
@@ -24,9 +24,7 @@ export default async function Cards({ params: { id } }: CardParams) {
           lte(reviewsSchema.next_review_date, new Date())
         )
       )
-    )
-
-  // console.log(cardsAndReview)
+    )) as unknown as { cards: ICard; reviews: IReview }[]
 
   const [{ title }] = await db
     .select({ title: decksSchema.name })
