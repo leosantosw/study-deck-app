@@ -20,37 +20,42 @@ export async function handleCreateDeck({
   description,
   cards,
 }: ICreateDeck) {
-  const userId = cookies().get('user_id')?.value || null
-  const [{ deckId }] = await db
-    .insert(decksSchema)
-    .values({
-      name,
-      user_id: String(userId),
-      description,
-      total_cards: cards.length,
-    })
-    .returning({ deckId: decksSchema.id })
+  try {
+    const userId = cookies().get('user_id')?.value || null
+    const [{ deckId }] = await db
+      .insert(decksSchema)
+      .values({
+        name,
+        user_id: String(userId),
+        description,
+        total_cards: cards.length,
+      })
+      .returning({ deckId: decksSchema.id })
 
-  const cardsIds = await db
-    .insert(cardsSchema)
-    .values(
-      cards.map((card) => ({
-        ...card,
-        deck_id: String(deckId),
+    const cardsIds = await db
+      .insert(cardsSchema)
+      .values(
+        cards.map((card) => ({
+          ...card,
+          deck_id: String(deckId),
+        }))
+      )
+      .returning({ cardId: cardsSchema.id })
+
+    await db.insert(reviewsSchema).values(
+      cardsIds.map(({ cardId }) => ({
+        user_id: String(userId),
+        card_id: String(cardId),
+        ease: 2.5,
+        interval: 10,
+        review_date: new Date(),
+        next_review_date: new Date(),
       }))
     )
-    .returning({ cardId: cardsSchema.id })
 
-  await db.insert(reviewsSchema).values(
-    cardsIds.map(({ cardId }) => ({
-      user_id: String(userId),
-      card_id: String(cardId),
-      ease: 2.5,
-      interval: 10,
-      review_date: new Date(),
-      next_review_date: new Date(),
-    }))
-  )
-
-  return { success: true }
+    return true
+  } catch (error) {
+    console.log(error)
+    return false
+  }
 }
