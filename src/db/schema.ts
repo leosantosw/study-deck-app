@@ -1,7 +1,7 @@
-import { pgTable, real, text, date } from 'drizzle-orm/pg-core'
+import { pgTable, real, text, integer, date } from 'drizzle-orm/pg-core'
 
 export const usersSchema = pgTable('users', {
-  id: text('id').primaryKey(),
+  id: text('id'),
   name: text('name').notNull(),
   username: text('username').notNull(),
   password_hash: text('password_hash').notNull(),
@@ -14,11 +14,11 @@ export const decksSchema = pgTable('decks', {
     .references(() => usersSchema.id),
   name: text('name').notNull(),
   description: text('description').notNull(),
-  total_cards: text('total_cards').notNull(),
+  total_cards: integer('total_cards').notNull(),
 })
 
 export const cardsSchema = pgTable('cards', {
-  id: text('id').primaryKey(),
+  id: text('id'),
   deck_id: text('deck_id')
     .notNull()
     .references(() => decksSchema.id),
@@ -27,7 +27,7 @@ export const cardsSchema = pgTable('cards', {
 })
 
 export const reviewsSchema = pgTable('reviews', {
-  id: text('id').primaryKey(),
+  id: text('id'),
   user_id: text('user_id')
     .notNull()
     .references(() => usersSchema.id),

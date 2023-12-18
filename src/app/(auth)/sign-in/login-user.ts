@@ -24,6 +24,7 @@ export async function loginUser({
   const [user] = await db
     .select({
       id: usersSchema.id,
+      name: usersSchema.name,
       username: usersSchema.username,
       password_hash: usersSchema.password_hash,
     })
@@ -41,7 +42,10 @@ export async function loginUser({
     return { message: 'wrong username or password', status: 401 }
   }
 
-  const accessToken = await new jose.SignJWT({ user_id: user.id })
+  const accessToken = await new jose.SignJWT({
+    user_id: user.id,
+    full_name: user.name,
+  })
     .setProtectedHeader({ alg: 'HS256' })
     .setIssuedAt()
     .setExpirationTime('1d')

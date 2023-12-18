@@ -1,12 +1,14 @@
 import { db } from '@/src/db'
 import { eq } from 'drizzle-orm'
-import { cookies } from 'next/headers'
 import { decksSchema } from '@/src/db/schema'
 import { BoxItem } from '@/src/components/box-item'
 import Link from 'next/link'
+import { cookies } from 'next/headers'
+import NavSection from './nav-seaction'
 
 export default async function Dashboad() {
   const userId = cookies().get('user_id')?.value || null
+  const fullName = cookies().get('full_name')?.value || null
 
   const decks = await db
     .select()
@@ -19,11 +21,7 @@ export default async function Dashboad() {
         <h1 className="text-blue-100 font-bold text-xl font-primary">
           Study deck
         </h1>
-        <img
-          src="https://github.com/leosantosw.png"
-          className="w-16 h-16 rounded-full"
-          alt="Profile"
-        />
+        <NavSection fullName={fullName} />
         <div className="absolute -bottom-1 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-green-500"></div>
       </header>
 

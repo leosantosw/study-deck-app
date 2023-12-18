@@ -7,6 +7,7 @@ const DASHBOARD_PATH = '/dashboard'
 
 interface JWTPayload {
   user_id: string
+  full_name: string
 }
 
 export async function middleware(request: NextRequest) {
@@ -19,13 +20,14 @@ export async function middleware(request: NextRequest) {
       : NextResponse.redirect(new URL(SIGN_IN_PATH, request.url))
   }
 
-  const userId = await verifyToken(accessToken)
+  const { userId, fullName } = await verifyToken(accessToken)
 
   if (!userId) {
     return NextResponse.redirect(new URL(SIGN_IN_PATH, request.url))
   }
 
   request.cookies.set('user_id', String(userId))
+  request.cookies.set('full_name', String(fullName))
 
   if (currentPathname.includes(DASHBOARD_PATH)) {
     return NextResponse.next({ request })
@@ -34,17 +36,19 @@ export async function middleware(request: NextRequest) {
   return NextResponse.redirect(new URL(DASHBOARD_PATH, request.url))
 }
 
-async function verifyToken(accessToken: string): Promise<boolean | string> {
+async function verifyToken(
+  accessToken: string
+): Promise<{ userId: string | null; fullName: string | null }> {
   try {
     const {
-      payload: { user_id: userId },
+      payload: { user_id: userId, full_name: fullName },
     } = await jose.jwtVerify<JWTPayload>(
       accessToken,
       new TextEncoder().encode(String(process.env.JWT_SECRET_KEY))
     )
-    return userId
+    return { userId, fullName }
   } catch (error) {
-    return false
+    return { userId: null, fullName: null }
   }
 }
 

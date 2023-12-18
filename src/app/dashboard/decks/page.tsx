@@ -1,9 +1,11 @@
 'use client'
 
-import { GoBackButton } from '@/src/components/goback-button'
-import { PlusCircle } from '@phosphor-icons/react'
-import { ChangeEvent, useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
+import { ChangeEvent, useState } from 'react'
+import { handleCreateDeck } from './create-deck'
+import { PlusCircle } from '@phosphor-icons/react'
+import { GoBackButton } from '@/src/components/goback-button'
+import { useRouter } from 'next/navigation'
 
 const notifications = {
   fillAllFields: () =>
@@ -14,21 +16,26 @@ const notifications = {
     toast.error('Adicione pelo menos um card!', {
       position: toast.POSITION.TOP_RIGHT,
     }),
+  successOnCreateDeck: () =>
+    toast.success('Lista criada com sucesso!', {
+      position: toast.POSITION.TOP_RIGHT,
+    }),
+  errorOnCreateDeck: () =>
+    toast.error('Erro ao criar lista!', {
+      position: toast.POSITION.TOP_RIGHT,
+    }),
 }
 
 export default function Page() {
-  const [cards, setCards] = useState([{ front: '', back: '' }])
-
-  useEffect(() => {
-    console.log(cards)
-  }, [cards])
+  const router = useRouter()
+  const [cards, setCards] = useState([{ front_text: '', back_text: '' }])
 
   const addCard = () => {
-    setCards((prevCards) => [...prevCards, { front: '', back: '' }])
+    setCards((prevCards) => [...prevCards, { front_text: '', back_text: '' }])
   }
 
   const handleInputChange = (
-    e: ChangeEvent<HTMLInputElement>,
+    e: ChangeEvent<HTMLTextAreaElement>,
     index: number,
     field: string
   ) => {
@@ -44,20 +51,30 @@ export default function Page() {
     })
   }
 
-  function handleSubmit(data: FormData) {
+  async function handleSubmit(data: FormData) {
     const deckName = String(data.get('name'))
-    const tag = String(data.get('tag'))
     const description = String(data.get('description'))
 
-    if (!deckName || !tag || !description) {
+    if (!deckName || !description) {
       return notifications.fillAllFields()
     }
 
-    if (cards[0].front === '' || cards[0].back === '') {
+    if (cards[0].front_text === '' || cards[0].back_text === '') {
       return notifications.fillOneCard()
     }
 
-    console.log(cards, deckName, tag, description)
+    const result = await handleCreateDeck({
+      name: deckName,
+      description,
+      cards,
+    })
+
+    if (!result) {
+      return notifications.errorOnCreateDeck()
+    }
+
+    notifications.successOnCreateDeck()
+    router.push('/dashboard/')
   }
 
   return (
@@ -82,17 +99,6 @@ export default function Page() {
         </label>
 
         <label className="block text-sm font-bold text-gray-700">
-          Tag
-          <input
-            id="tag"
-            name="tag"
-            type="text"
-            required
-            className="appearance-none rounded-md relative block w-full px-3 py-3 mt-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-          />
-        </label>
-
-        <label className="block text-sm font-bold text-gray-700 sm:col-span-2">
           Descrição
           <textarea
             id="description"
@@ -109,14 +115,14 @@ export default function Page() {
               <h4 className="text-sm font-bold text-gray-600">#{index + 1}</h4>
               <textarea
                 placeholder="Frente do card"
-                value={card.front}
-                onChange={(e) => handleInputChange(e, index, 'front')}
+                value={card.front_text}
+                onChange={(e) => handleInputChange(e, index, 'front_text')}
                 className="appearance-none rounded-md relative block w-full px-3 py-3 mt-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
               />
               <textarea
                 placeholder="Verso do card"
-                value={card.back}
-                onChange={(e) => handleInputChange(e, index, 'back')}
+                value={card.back_text}
+                onChange={(e) => handleInputChange(e, index, 'back_text')}
                 className="appearance-none rounded-md relative block w-full px-3 py-3 mt-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
               />
             </div>
