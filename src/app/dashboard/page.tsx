@@ -25,7 +25,7 @@ export default async function Dashboad() {
         <div className="absolute -bottom-1 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-green-500"></div>
       </header>
 
-      <main className="p-5 md:px-16">
+      <main className="p-5 md:px-16 h-screen">
         <div className="flex justify-between">
           <h2 className="mt-auto text-base align-text-bottom font-bold text-gray-800 pb-3 font-primary">
             {decks.length > 0 ? 'Listas' : 'Nenhuma lista ainda.'}

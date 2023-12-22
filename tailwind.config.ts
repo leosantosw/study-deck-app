@@ -70,7 +70,7 @@ const config: Config = {
         '100': '25rem',
       },
       fontFamily: {
-        primary: ['Plus Jakarta Sans'],
+        primary: ['Plus Jakarta Sans', 'sans-serif'],
       },
     },
   },

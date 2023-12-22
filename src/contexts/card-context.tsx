@@ -20,7 +20,9 @@ export default function CardProvider({ children }: { children: ReactNode }) {
   function handleSetNextCard(totalCards: number) {
     setCurrentCard((currentCard + 1) % totalCards)
     setIsFlipped(false)
-    setIsFinishedDeck(currentCard + 1 === totalCards)
+    if (currentCard + 1 === totalCards) {
+      setIsFinishedDeck(true)
+    }
   }
 
   function handleToggleIsFlipped() {

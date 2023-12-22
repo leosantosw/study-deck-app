@@ -60,6 +60,7 @@ export function CardComponent({ flashcards }: CardComponentProps) {
   }
 
   if (isFinishedDeck) {
+    console.log('terminou o deck')
     return (
       <div className="flex flex-col items-center mt-4">
         <h1 className="text-blue-100 text-2xl">Parabéns!</h1>

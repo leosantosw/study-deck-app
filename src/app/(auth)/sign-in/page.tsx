@@ -1,15 +1,19 @@
 'use client'
 
-import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { setCookie } from 'nookies'
+import { FormEvent, useCallback, useState } from 'react'
+import { ClipLoader } from 'react-spinners'
 import { toast } from 'react-toastify'
 import { loginUser } from './login-user'
-import { useRouter } from 'next/navigation'
-import { ClipLoader } from 'react-spinners'
-import { setCookie } from 'nookies'
 
 const notifications = {
   loginSuccessful: () =>
     toast.success('Login realizado com sucesso!', {
+      position: toast.POSITION.TOP_RIGHT,
+    }),
+  fillAllFields: () =>
+    toast.error('Preencha todos os campos!', {
       position: toast.POSITION.TOP_RIGHT,
     }),
   wrongCredentials: () =>
@@ -24,13 +28,18 @@ export default function Login() {
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
 
-  async function handleSubmit(data: FormData) {
-    const username = String(data.get('username'))
-    const password = String(data.get('password'))
+  const onSubmit = useCallback(async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+
+    const formData = new FormData(event.currentTarget)
+    const username = String(formData.get('username'))
+    const password = String(formData.get('password'))
 
     if (!username || !password) {
-      return
+      return notifications.fillAllFields()
     }
+
+    setIsLoading(true)
 
     const { status, access_token: accessToken } = await loginUser({
       username,
@@ -50,7 +59,7 @@ export default function Login() {
 
     notifications.loginSuccessful()
     return router.push('/dashboard')
-  }
+  }, [])
 
   return (
     <div className="font-primary min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
@@ -60,13 +69,13 @@ export default function Login() {
             Faça seu login na plataforma
           </h2>
         </div>
-        <form action={handleSubmit} className="mt-8 space-y-6 sm:w-2/5">
+
+        <form onSubmit={onSubmit} className="mt-8 space-y-6 sm:w-2/5">
           <input
             id="username"
             name="username"
             type="username"
             autoComplete="username"
-            required
             className="appearance-none rounded-md relative block w-full px-3 py-4 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
             placeholder="Username"
             value={email}
@@ -77,7 +86,6 @@ export default function Login() {
             name="password"
             type="password"
             autoComplete="current-password"
-            required
             className="appearance-none rounded-md relative block w-full px-3 py-4 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
             placeholder="Senha"
             value={password}
@@ -86,10 +94,10 @@ export default function Login() {
           <div className="w-full mx-auto">
             <button
               type="submit"
-              onClick={() => setIsLoading(true)}
+              disabled={isLoading}
               className={`${
-                isLoading ? 'cursor-not-allowed' : 'cursor-pointer'
-              } w-full group relative flex justify-center py-3 px-4 border border-transparent font-bold text-lg rounded-md text-blue-50 bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
+                isLoading ? 'bg-blue-700 cursor-not-allowed' : 'cursor-pointer'
+              } w-full group relative flex justify-center py-3 px-4 border border-transparent font-bold text-lg rounded-md text-blue-50 bg-blue-600 hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
             >
               <ClipLoader
                 color="#fff"

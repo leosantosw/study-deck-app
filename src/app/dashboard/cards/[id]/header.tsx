@@ -2,8 +2,8 @@
 
 import { useCard } from '@/src/contexts/card-context'
 import { GoBackButton } from '@/src/components/goback-button'
-import dynamic from 'next/dynamic'
-const Confetti = dynamic(() => import('react-dom-confetti'), { ssr: false })
+import Confetti from 'react-dom-confetti'
+import { useEffect, useState } from 'react'
 
 const config = {
   angle: 90,
@@ -25,12 +25,20 @@ interface HeaderProps {
 
 export function Header({ totalCards, title }: HeaderProps) {
   const { currentCard, isFinishedDeck } = useCard()
+  const [showConfetti, setShowConfetti] = useState(false)
+
+  useEffect(() => {
+    if (isFinishedDeck) {
+      setShowConfetti(true)
+    }
+  }, [isFinishedDeck])
+
   return (
     <header className="pt-12 md:pt-6 overflow-hidden">
       <GoBackButton />
       <div className="flex flex-col items-center justify-center h-32 md:h-36">
         <h1 className="text-blue-100 text-2xl">{title}</h1>
-        <Confetti key={currentCard} active={isFinishedDeck} config={config} />
+        <Confetti key={currentCard} active={showConfetti} config={config} />
         <div className="flex items-center mt-4">
           <div className="w-72 md:w-88 h-3 bg-blue-600 rounded-full">
             <div

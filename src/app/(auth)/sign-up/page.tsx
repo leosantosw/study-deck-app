@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { FormEvent, useState } from 'react'
 import { ArrowLeft } from '@phosphor-icons/react'
 import { toast } from 'react-toastify'
 import { ClipLoader } from 'react-spinners'
@@ -22,14 +22,19 @@ export default function SignUp() {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
 
-  async function handleSubmit(data: FormData) {
-    const name = String(data.get('name'))
-    const username = String(data.get('username'))
-    const password = String(data.get('password'))
+  const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+
+    const formData = new FormData(event.currentTarget)
+    const name = String(formData.get('name'))
+    const username = String(formData.get('username'))
+    const password = String(formData.get('password'))
 
     if (!name || !username || !password) {
       return
     }
+
+    setIsLoading(true)
 
     const { status } = await createUser({ name, username, password })
 
@@ -49,7 +54,7 @@ export default function SignUp() {
       <h2 className="mt-6 text-center text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-gray-900 to-blue-900">
         Crie sua conta
       </h2>
-      <form action={handleSubmit} className="mt-8 space-y-4 w-full sm:max-w-md">
+      <form onSubmit={onSubmit} className="mt-8 space-y-4 w-full sm:max-w-md">
         <input
           id="name"
           name="name"
@@ -77,7 +82,7 @@ export default function SignUp() {
         />
         <button
           type="submit"
-          onClick={() => setIsLoading(true)}
+          disabled={isLoading}
           className={`${
             isLoading ? 'cursor-not-allowed' : 'cursor-pointer'
           } w-full group relative flex justify-center py-3 px-4 border border-transparent font-bold text-lg rounded-md text-blue-50 bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}

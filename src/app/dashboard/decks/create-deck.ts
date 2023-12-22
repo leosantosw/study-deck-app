@@ -3,6 +3,7 @@
 import { db } from '@/src/db'
 import { cardsSchema, decksSchema, reviewsSchema } from '@/src/db/schema'
 import { cookies } from 'next/headers'
+import { revalidatePath } from 'next/cache'
 
 interface ICards {
   front_text: string
@@ -53,6 +54,7 @@ export async function handleCreateDeck({
       }))
     )
 
+    revalidatePath('/dashboard')
     return true
   } catch (error) {
     console.log(error)

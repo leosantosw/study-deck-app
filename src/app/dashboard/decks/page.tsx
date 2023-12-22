@@ -1,12 +1,12 @@
 'use client'
 
 import { toast } from 'react-toastify'
-import { ChangeEvent, useState } from 'react'
+import { ChangeEvent, FormEvent, useCallback, useState } from 'react'
 import { handleCreateDeck } from './create-deck'
 import { PlusCircle } from '@phosphor-icons/react'
 import { GoBackButton } from '@/src/components/goback-button'
 import { useRouter } from 'next/navigation'
-import { revalidatePath } from 'next/cache'
+import { ClipLoader } from 'react-spinners'
 
 const notifications = {
   fillAllFields: () =>
@@ -30,6 +30,7 @@ const notifications = {
 export default function Page() {
   const router = useRouter()
   const [cards, setCards] = useState([{ front_text: '', back_text: '' }])
+  const [isLoading, setIsLoading] = useState(false)
 
   const addCard = () => {
     setCards((prevCards) => [...prevCards, { front_text: '', back_text: '' }])
@@ -52,32 +53,41 @@ export default function Page() {
     })
   }
 
-  async function handleSubmit(data: FormData) {
-    const deckName = String(data.get('name'))
-    const description = String(data.get('description'))
+  const onSubmit = useCallback(
+    async (event: FormEvent<HTMLFormElement>) => {
+      event.preventDefault()
+      const formData = new FormData(event.currentTarget)
 
-    if (!deckName || !description) {
-      return notifications.fillAllFields()
-    }
+      const deckName = String(formData.get('name'))
+      const description = String(formData.get('description'))
 
-    if (cards[0].front_text === '' || cards[0].back_text === '') {
-      return notifications.fillOneCard()
-    }
+      if (!deckName || !description) {
+        return notifications.fillAllFields()
+      }
 
-    const result = await handleCreateDeck({
-      name: deckName,
-      description,
-      cards,
-    })
+      if (cards[0].front_text === '' || cards[0].back_text === '') {
+        return notifications.fillOneCard()
+      }
 
-    if (!result) {
-      return notifications.errorOnCreateDeck()
-    }
+      setIsLoading(true)
 
-    notifications.successOnCreateDeck()
-    revalidatePath('/dashboard/')
-    router.push('/dashboard/')
-  }
+      const result = await handleCreateDeck({
+        name: deckName,
+        description,
+        cards,
+      })
+
+      setIsLoading(false)
+
+      if (!result) {
+        return notifications.errorOnCreateDeck()
+      }
+
+      notifications.successOnCreateDeck()
+      router.push('/dashboard/')
+    },
+    [cards]
+  )
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen py-2 font-primary mt-16 sm:mt-8">
@@ -86,7 +96,7 @@ export default function Page() {
         Criar nova lista
       </h2>
       <form
-        action={handleSubmit}
+        onSubmit={onSubmit}
         className="grid grid-cols-1 gap-4 gap-x-4 w-full max-w-4xl sm:grid-cols-2 px-4"
       >
         <label className="block text-sm font-bold text-gray-900">
@@ -95,7 +105,6 @@ export default function Page() {
             id="name"
             name="name"
             type="text"
-            required
             className="appearance-none rounded-md relative block w-full px-3 py-3 mt-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
           />
         </label>
@@ -105,7 +114,6 @@ export default function Page() {
           <textarea
             id="description"
             name="description"
-            required
             className="sm:h-[46px] appearance-none rounded-md relative block w-full px-3 py-3 mt-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
           />
         </label>
@@ -140,9 +148,20 @@ export default function Page() {
 
         <button
           type="submit"
-          className="w-full group relative flex justify-center py-3 px-4 border border-transparent font-bold text-lg rounded-md text-blue-50 bg-blue-600 hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          disabled={isLoading}
+          className={`${
+            isLoading ? 'bg-blue-700 cursor-not-allowed' : 'cursor-pointer'
+          } w-full group relative flex justify-center py-3 px-4 border border-transparent font-bold text-lg rounded-md text-blue-50 bg-blue-600 hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
         >
-          Criar
+          <ClipLoader
+            color="#fff"
+            loading={isLoading}
+            size={25}
+            aria-label="Loading Spinner"
+            data-testid="loader"
+            className="mr-2 mt-[2px]"
+          />
+          {!isLoading && 'CRIAR'}
         </button>
       </form>
     </div>
